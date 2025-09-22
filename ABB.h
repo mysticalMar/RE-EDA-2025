@@ -12,11 +12,19 @@ typedef struct {
     int nota;
     char condicion[11];
 } AlumnoABB;
-//Variables de costo
-int maxAltaExitosa = 0, cantActPtrosAltaExitosa = 0, cantAltasExitosas = 0;
-int maxBajaExitosa = 0, cantActPtrosBajaExitosa = 0, cantBajasExitosas = 0;
-int maxEvocExitosa = 0, cantComparacionesEvocExitosa = 0, cantEvocacionesExitosas = 0;
-int maxEvocNoExitosa = 0, cantComparacionesEvocNoExitosa = 0, cantEvocacionesNoExitosas = 0;
+// Variables globales para el costo de las operaciones
+int cantActPtrosAlta = 0;   // Acumula cuántas actualizaciones de punteros se hacen en cada alta.
+int MaxAlta = 0;            // Guarda el valor más grande en actualizaciones de punteros en una alta.
+int cantAltas = 0;          // Cuenta la cantidad de altas exitosas.
+
+int cantActPtrosBaja = 0;   // Acumula cuántas actualizaciones de punteros se hacen en cada baja.
+int MaxBaja = 0;            // Guarda el valor más grande en actualizaciones de punteros en una baja.
+int cantBajas = 0;          // Cuenta la cantidad de bajas exitosas.
+
+int comparacionesEvocar = 0; // Acumula la cantidad de comparaciones en evocaciones.
+int cantEvocaciones = 0;     // Cuenta la cantidad de evocaciones.
+int MaxComparaciones = 0;    // Guarda la máxima cantidad de comparaciones en una evocación.
+
 
 
 typedef struct nodoA {
@@ -44,19 +52,21 @@ void Localizar_ABB(Arbol *a, char codigo [], int *exito, int *comparaciones) {
     a->padre = NULL;
 
     while (a->cur != NULL) {
-        (*comparaciones)++;  // Costo por comparaci�n
+        (*comparaciones)++;
         if (strcasecmp(a->cur->datos.codigo,codigo)==0) {
             *exito = 1;
-            return;  // codigo encontrado
+            return;
         }
         a->padre = a->cur;
-        if (strcasecmp(a->cur->datos.codigo,codigo)<0) {//no se si es < o >
-            a->cur = a->cur->izq;
-        } else {
+
+
+        if (strcasecmp(a->cur->datos.codigo,codigo)<0) {
             a->cur = a->cur->der;
+        } else {
+            a->cur = a->cur->izq;
         }
     }
-    *exito = 0;  // No se encontr� el codigo
+    *exito = 0;
 }
 
 void Alta_ABB(Arbol *a, AlumnoABB nuevoAlumno, int *exito) {
@@ -91,10 +101,10 @@ void Alta_ABB(Arbol *a, AlumnoABB nuevoAlumno, int *exito) {
     }
 
     if (*exito == 1) {
-        cantAltasExitosas++;  // Incrementar el n�mero de altas exitosas
-        cantActPtrosAltaExitosa += actualizacionestemp * 0.5;  // Sumar costo por actualizaciones de punteros
-        if (actualizacionestemp > maxAltaExitosa) {
-            maxAltaExitosa = actualizacionestemp;  // Actualizar el m�ximo de actualizaciones
+        cantAltas++;  // Incrementar el n�mero de altas exitosas
+        cantActPtrosAlta += actualizacionestemp * 0.5;  // Sumar costo por actualizaciones de punteros
+        if (actualizacionestemp > MaxAlta) {
+            MaxAlta = actualizacionestemp;  // Actualizar el m�ximo de actualizaciones
         }
     }
 }
@@ -174,10 +184,10 @@ int Baja_ABB(Arbol *a, AlumnoABB alumno) {
     }
 
     // Costos de baja
-    cantBajasExitosas++;
-    cantActPtrosBajaExitosa += actualizacionestemp * 0.5;
-    if (actualizacionestemp > maxBajaExitosa) {
-        maxBajaExitosa = actualizacionestemp;
+    cantBajas++;
+    cantActPtrosBaja += actualizacionestemp * 0.5;
+    if (actualizacionestemp > MaxBaja) {
+        MaxBaja = actualizacionestemp;
     }
 
     return 1;
@@ -251,19 +261,14 @@ void MostrarEstructura_ABB(Arbol *a) {
         *alumnoEncontrado = a->cur->datos;
 
         // Actualizar costos de evocaci�n exitosa
-        cantComparacionesEvocExitosa += comparacionestemp;
-        if (comparacionestemp > maxEvocExitosa) {
-            maxEvocExitosa = comparacionestemp;
+        comparacionesEvocar += comparacionestemp;
+        if (comparacionestemp > MaxComparaciones) {
+            MaxComparaciones = comparacionestemp;
         }
-        cantEvocacionesExitosas++;
+        cantEvocaciones++;
 
         return 1;  // Evocaci�n exitosa
     } else {
-        cantComparacionesEvocNoExitosa += comparacionestemp;
-        if (comparacionestemp > maxEvocNoExitosa) {
-            maxEvocNoExitosa = comparacionestemp;
-        }
-        cantEvocacionesNoExitosas++;
 
         return 0;  // Evocaci�n no exitosa
     }

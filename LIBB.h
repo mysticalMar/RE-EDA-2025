@@ -1,7 +1,7 @@
 
 
-#ifndef LIBB_H_INCLUDED
-#define LIBB_H_INCLUDED
+#ifndef LIBT_H_INCLUDED
+#define LIBT_H_INCLUDED
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,9 +10,13 @@
 
 
 //variables de costos
-int LIBT_Altas=0, LIBT_total_Alta, LIBT_corr_Alta=0, LIBT_max_Alta=0,
-    LIBT_Bajas=0, LIBT_total_Baja=0, LIBT_corr_Baja=0, LIBT_max_Baja=0;
-float LIBT_medio_Alta=0, LIBT_medio_Baja=0;
+int LIBT_Altas=0,
+    LIBT_Bajas=0,
+    LIBT_Evocaciones=0;
+    LIBT_celdas_consultadas=0, LIBT_total_celdas=0, LIBT_max_celdas=0;
+float LIBT_medio_Alta=0, LIBT_medio_Baja=0, LIBT_medio_Evocar=0,
+LIBT_total_Alta, LIBT_corr_Alta=0, LIBT_max_Alta=0,
+LIBT_total_Baja=0, LIBT_corr_Baja=0, LIBT_max_Baja=0;
 //Explicacion de variables:
 //LIBB_Altas: total de altas exitosas en la lista
 //LIBB_total_Alta: son todos los corrimientos en la lista
@@ -21,9 +25,8 @@ float LIBT_medio_Alta=0, LIBT_medio_Baja=0;
 //LIBB_medio_Alta: coste medio del alta.
 int LIBT_elementos=0;
 
-LIBT_Localizar(Alumno* l[], char codigo[], int *exito, int *pos)   //li inclusivo ls inclusivo, testigo y segmento mas grande a izquierda
+void LIBT_Localizar(Alumno* l[], char codigo[], int *exito, int *pos, int costo)   //li inclusivo ls inclusivo, testigo y segmento mas grande a izquierda
 {
-        int control_celdas[LIBT_elementos];
         if (LIBT_elementos==0)
         {
             *exito=0;
@@ -34,11 +37,13 @@ LIBT_Localizar(Alumno* l[], char codigo[], int *exito, int *pos)   //li inclusiv
             int li,ls,m;
             li=0;
             ls=LIBT_elementos-1;
-
+             m =(li+ls+1)/2;
             while (li<=ls&&(strcasecmp(l[m]->codigo, codigo) != 0)){
             {
+                if (costo==1){
+                    LIBT_celdas_consultadas++;
+                }
                 m =(li+ls+1)/2;
-
                 if (strcasecmp(l[m]->codigo, codigo) > 0)
                 {
                     ls = m-1;
@@ -65,6 +70,17 @@ LIBT_Localizar(Alumno* l[], char codigo[], int *exito, int *pos)   //li inclusiv
             }
         }
     }
+    //calculos de costos en caso de evocacion
+    if (costo==1){
+            //chequear el maximo
+        if (LIBT_celdas_consultadas>LIBT_max_celdas){
+            LIBT_max_celdas=LIBT_celdas_consultadas;
+        }
+        //actualizar la cantidad total de celdas consultadas
+        LIBT_total_celdas+=LIBT_celdas_consultadas;
+        //resetear el contador temporal de celdas
+        LIBT_celdas_consultadas=0;
+    }
 }
 
 
@@ -73,7 +89,7 @@ LIBT_Localizar(Alumno* l[], char codigo[], int *exito, int *pos)   //li inclusiv
 void LIBT_Alta(Alumno* l[], Alumno* ElementoAlta, int *exito)
 {
     int pos, exitoLocalizar = 0, i;
-    LIBT_Localizar(l, ElementoAlta->codigo, &exitoLocalizar, &pos);
+    LIBT_Localizar(l, ElementoAlta->codigo, &exitoLocalizar, &pos, 0);
     if (!exitoLocalizar)
     {
         if (LIBT_elementos < MAXALUMNOS)
@@ -82,7 +98,7 @@ void LIBT_Alta(Alumno* l[], Alumno* ElementoAlta, int *exito)
             for (i = LIBT_elementos; i > pos; i--)
             {
                 l[i] = l[i - 1];
-                LIBT_corr_Alta++;
+                LIBT_corr_Alta=LIBT_corr_Alta+0.5;
             }
             // Insertamos el elemento en la posici�n encontrada
             l[pos]=ElementoAlta;
@@ -113,17 +129,17 @@ void LIBT_Alta(Alumno* l[], Alumno* ElementoAlta, int *exito)
     LIBT_corr_Alta=0;
 }
 
-int LIBT_Baja(Alumno* l[], char codigo[], Alumno* e, int modouser)
+int LIBT_Baja(Alumno* l[], char codigo[], Alumno* e)
 {
         int pos, exitoLocalizar=0, i, c=0;
-
-        LIBT_Localizar(l, codigo,  &exitoLocalizar, &pos);
+        LIBT_Localizar(l, codigo,  &exitoLocalizar, &pos, 0);
         if(!exitoLocalizar)
         {
-            return 0;
+            return 0; //no se encontró el elemento
         }
             else
             {
+
                 if (sondif(l, pos, e)) return 3; //no es el mismo elemento
 
                 else
@@ -132,7 +148,7 @@ int LIBT_Baja(Alumno* l[], char codigo[], Alumno* e, int modouser)
                     for(i=pos; i<LIBT_elementos-1; i++)
                     {
                         l[i] = l[i+1];
-                        LIBT_corr_Baja++;
+                        LIBT_corr_Baja+=0.5;
                     }
                     LIBT_elementos--;//Reducimos el numero de elementos
                     LIBT_Bajas++;
@@ -152,6 +168,7 @@ int LIBT_Baja(Alumno* l[], char codigo[], Alumno* e, int modouser)
 
 
 void LIBT_MostrarAlumno(Alumno* a){
+
             printf("Codigo: %s\n", a->codigo);
             printf("Nombre: %s\n", a->nombreyapellido);
             printf("Correo: %s\n", a->correo);
@@ -163,11 +180,12 @@ void LIBT_MostrarAlumno(Alumno* a){
 void LIBT_Evocar(Alumno* LIBB[], Alumno** Elem, char codigo[], int *exito)
 {
     int pos, exitoLocalizar;
-    LIBT_Localizar(LIBB, codigo, &exitoLocalizar, &pos);
+    LIBT_Localizar(LIBB, codigo, &exitoLocalizar, &pos, 1);
     if (exitoLocalizar)
     {
         *Elem = LIBB[pos];
         *exito = 1;
+        LIBT_Evocaciones++;
     }
     else
     {
@@ -189,11 +207,7 @@ void LIBT_MostrarEstructura(Alumno* l[]) {
     for (i = 0; i < LIBT_elementos; i++) {
         printf("--------- Listado de Alumnos ---------\n");
         printf("Alumno %d:\n", i + 1);
-         printf("Codigo: %s\n", l[i]->codigo);
-            printf("Nombre: %s\n", l[i]->nombreyapellido);
-            printf("Correo: %s\n", l[i]->correo);
-            printf("Nota: %d\n", l[i]->nota);
-            printf("Condicion: %s\n", l[i]->condicion);
+        LIBT_MostrarAlumno(l[i]);
         printf("------------------------------------------\n");
         c++;
         if (c==5){
@@ -205,6 +219,10 @@ void LIBT_MostrarEstructura(Alumno* l[]) {
 
 int sondif(Alumno* l[], int pos, Alumno* elemento)
 {
+    printf("sonfid test \n");
+    LIBT_MostrarAlumno(l[pos]);
+    LIBT_MostrarAlumno(elemento);
+    printf("------------------------------------------\n");
 
     return (strcasecmp(l[pos]->nombreyapellido, elemento->nombreyapellido) +
             strcasecmp(l[pos]->codigo, elemento->codigo) +
@@ -215,4 +233,4 @@ int sondif(Alumno* l[], int pos, Alumno* elemento)
 
 
 
-#endif // LIBB_H_INCLUDED
+#endif // LIBT_H_INCLUDED
