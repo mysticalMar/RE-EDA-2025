@@ -87,7 +87,7 @@ int confirma(Alumno l[], int pos){
 
 
 
-void MostrarEstructura(Alumno l[]) {
+void LSO_MostrarEstructura(Alumno l[]) {
     system("cls");
     int i, c=0;
 
