@@ -29,7 +29,7 @@
             break;
         }
 
-        if (opcion == 1) {
+        if (opcion == 1 || opcion == 2) {
            fscanf(fp, "%8s\n", aux_LIBT->codigo);
            fgets(nombre_completo, sizeof(nombre_completo), fp);
                         fscanf(fp, "%s\n", aux_LIBT->correo);
@@ -50,40 +50,53 @@
             strcpy(aux_ABB.condicion, aux_LSO.condicion);
             strcpy(aux_ABB.codigo, aux_LSO.codigo);
             strcpy(aux_ABB.correo, aux_LSO.correo);
-            if (LIBT_elementos<MAXALUMNOS){
-            LIBT_Alta(LIBT, aux_LIBT, &exitoLIBT);
+        }
+                 else
+                fscanf(fp, "%s", codigo);
+
+
+            switch (opcion) {
+                case 1: if (LIBT_elementos<MAXALUMNOS){
+                LIBT_Alta(LIBT, aux_LIBT, &exitoLIBT);
+                }
+                if (CantElemLSO<MAXALUMNOS){
+                LSO_Alta(LSO, aux_LSO, &exitoLSO);
+                }
+                Alta_ABB(arbol, aux_ABB, &exitoABB);
+                break;
+                case 2:
+
+                LIBT_Baja(LIBT, codigo, aux_LIBT);
+                LSO_Baja(LSO, codigo, aux_LSO);
+                Baja_ABB(arbol, aux_ABB);
+
+                break;
+
+                case 3:
+                LIBT_Evocar(LIBT, aux_LIBT, codigo, &exitoLIBT);
+                LSO_Evocar(LSO,  &aux_LSO, codigo, &exitoLSO);
+                Evocar_ABB(arbol, codigo, &exitoABB, &aux_ABB);
+                break;
             }
-            LSO_Alta(LSO, aux_LSO, &exitoLSO);
-            Alta_ABB(arbol, aux_ABB, &exitoABB);
-        }
+    }
 
-        else if (opcion == 2) {
-            fscanf(fp, "%8s\n", codigo);
-            LIBT_Baja(LIBT, codigo, aux_LIBT);
-            LSO_Baja(LSO, codigo, &exitoLSO);
-            Baja_ABB(arbol, aux_ABB);
-        }
 
-        else if (opcion == 3) {
-            fscanf(fp, "%s", codigo);
-            LIBT_Evocar(LIBT, aux_LIBT, codigo, &exitoLIBT);
-            LSO_Evocar(LSO,  &aux_LSO, codigo, &exitoLSO);
-            Evocar_ABB(arbol, codigo, &exitoABB, &aux_ABB);
-        }
-
-        free(aux_LIBT);
     }
 
     fclose(fp);
     return 1;
  }
 
-}
 
 int main()
 {
     int opcion;
     Alumno* LIBT[130], nuevo_alumno;
+    int i;
+
+    for (i = 0; i < MAXALUMNOS; i++) {
+    LIBT[i] = NULL;
+}
     Alumno LSO[130];
     Arbol arbol;
     init_ABB(&arbol);

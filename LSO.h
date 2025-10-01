@@ -78,12 +78,11 @@ void LSO_Alta(Alumno l[], Alumno ElementoAlta, int *exito) {
     LSO_corr_Alta=0;
 }
 
-void LSO_Baja(Alumno l[], char codigo[], int *exito){
+int LSO_Baja(Alumno l[], char codigo[], Alumno elemento){
 int pos, exitoLocalizar=0, i;
 
 LSO_Localizar(l, codigo,  &exitoLocalizar, &pos, 0);
 if(exitoLocalizar){
-
 
     for(i=pos; i < CantElemLSO-1; i++){
         l[i] = l[i+1];
@@ -91,20 +90,20 @@ if(exitoLocalizar){
     }
     CantElemLSO--;//Reducimos el numero de elementos
     LSO_Bajas++;
-
-    *exito=1; //Se dio de baja correctamente
-
-    } else {
-        *exito = 0;
-
-    }
-          //Calculos de costos
+       //Calculos de costos
         if (LSO_corr_Baja>LSO_max_Baja)
         {
             LSO_max_Baja=LSO_corr_Baja;
         }
         LSO_total_Baja+=LSO_corr_Baja;
         LSO_corr_Baja=0;
+    return 1; //Se dio de baja correctamente
+
+    } else {
+        return 0;
+
+    }
+
 
 }
 

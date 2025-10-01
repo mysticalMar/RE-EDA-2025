@@ -27,6 +27,7 @@ int LIBT_elementos=0;
 
 void LIBT_Localizar(Alumno* l[], char codigo[], int *exito, int *pos, int costo)   //li inclusivo ls inclusivo, testigo y segmento mas grande a izquierda
 {
+
         if (LIBT_elementos==0)
         {
             *exito=0;
@@ -34,41 +35,36 @@ void LIBT_Localizar(Alumno* l[], char codigo[], int *exito, int *pos, int costo)
         }
         else
         {
-            int li,ls,m;
-            li=0;
-            ls=LIBT_elementos-1;
-             m =(li+ls+1)/2;
-            while (li<=ls&&(strcasecmp(l[m]->codigo, codigo) != 0)){
-            {
-                if (costo==1){
-                    LIBT_celdas_consultadas++;
-                }
-                m =(li+ls+1)/2;
-                if (strcasecmp(l[m]->codigo, codigo) > 0)
-                {
-                    ls = m-1;
-                }
-                else
-                {
-                    li = m+1;
-                }
+            int li = 0;
+    int ls = LIBT_elementos - 1;
+    int m;
+    *exito = 0;
 
-            }
-            if ((strcasecmp(l[m]->codigo, codigo)==0))
-            {
-                *exito= 1; //localizaci�n exitosa
-                *pos=li;
-            }
-            else
-            {
-                *exito=0; //localizacion no exitosa
-                *pos=li;
-                if (l[li]->codigo<codigo)
-                {
-                *pos=*pos+1;
-                }
-            }
-        }
+    while (li <= ls) {
+
+    m = (li+ls+1) / 2;
+
+    if (costo == 1) {
+        LIBT_celdas_consultadas++;
+    }
+
+    int comp = strcasecmp(l[m]->codigo, codigo);
+
+    if (comp == 0) { //encontró el elemento
+        *exito = 1;
+        *pos = m;
+        break;
+    } else if (comp > 0) { //el elemento es menor al x en la posicion m
+        ls = m - 1;
+    } else {
+       //el elemento es mayor al x en la posicion m
+        li = m + 1;
+    }
+}
+
+if (*exito == 0) {
+    *pos = li;
+}
     }
     //calculos de costos en caso de evocacion
     if (costo==1){
@@ -108,6 +104,14 @@ void LIBT_Alta(Alumno* l[], Alumno* ElementoAlta, int *exito)
             *exito = 1;  // Alta exitosa
             LIBT_Altas++;
 
+                     //Calculos de costos
+            if (LIBT_corr_Alta>LIBT_max_Alta)
+            {
+                LIBT_max_Alta=LIBT_corr_Alta;
+            }
+            LIBT_total_Alta+=LIBT_corr_Alta;
+            LIBT_corr_Alta=0;
+
         }
         else
         {
@@ -120,13 +124,7 @@ void LIBT_Alta(Alumno* l[], Alumno* ElementoAlta, int *exito)
         *exito = 2;  // Alta no exitosa, DNI repetido
 
     }
-    //Calculos de costos
-    if (LIBT_corr_Alta>LIBT_max_Alta)
-    {
-        LIBT_max_Alta=LIBT_corr_Alta;
-    }
-    LIBT_total_Alta+=LIBT_corr_Alta;
-    LIBT_corr_Alta=0;
+
 }
 
 int LIBT_Baja(Alumno* l[], char codigo[], Alumno* e)
@@ -165,6 +163,7 @@ int LIBT_Baja(Alumno* l[], char codigo[], Alumno* e)
         LIBT_total_Baja+=LIBT_corr_Baja;
         LIBT_corr_Baja=0;
 }
+
 
 
 void LIBT_MostrarAlumno(Alumno* a){
@@ -219,11 +218,6 @@ void LIBT_MostrarEstructura(Alumno* l[]) {
 
 int sondif(Alumno* l[], int pos, Alumno* elemento)
 {
-    printf("sonfid test \n");
-    LIBT_MostrarAlumno(l[pos]);
-    LIBT_MostrarAlumno(elemento);
-    printf("------------------------------------------\n");
-
     return (strcasecmp(l[pos]->nombreyapellido, elemento->nombreyapellido) +
             strcasecmp(l[pos]->codigo, elemento->codigo) +
             strcasecmp(l[pos]->condicion, elemento->condicion)+
