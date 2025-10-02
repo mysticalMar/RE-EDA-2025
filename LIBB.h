@@ -47,7 +47,7 @@ void LIBT_Localizar(Alumno* l[], char codigo[], int *exito, int *pos, int costo)
     m = (li+ls+1) / 2;
 
     if (costo == 1) {
-        LIBT_celdas_consultadas++;
+        LIBT_celdas_consultadas=+2;
     }
 
     int comp = strcasecmp(l[m]->codigo, codigo);
@@ -241,7 +241,7 @@ int sondif(Alumno* l[], int pos, Alumno* elemento)
             strcasecmp(l[pos]->codigo, elemento->codigo) +
             strcasecmp(l[pos]->condicion, elemento->condicion)+
             strcasecmp(l[pos]->correo, elemento->correo)+
-            l[pos]->nota==elemento->nota);
+            l[pos]->nota!=elemento->nota);
 }
 
 

@@ -67,8 +67,8 @@
                 case 2:
                 LIBT_MostrarAlumno(aux_LIBT);
                 MostrarAlumno(aux_LSO);
-                exitoLIBT=LIBT_Baja(LIBT, codigo, aux_LIBT);
-                exitoLSO=LSO_Baja(LSO, codigo, aux_LSO);
+                exitoLIBT=LIBT_Baja(LIBT,  aux_LIBT->codigo, aux_LIBT);
+                exitoLSO=LSO_Baja(LSO, aux_LSO.codigo, aux_LSO);
                 printf("exito LIBT_ %d \n", exitoLIBT);
                 printf("exito lso %d \n", exitoLSO);
                 Baja_ABB(arbol, aux_ABB);

@@ -160,7 +160,7 @@ int sondif_LSO(Alumno l[], int pos, Alumno elemento)
             strcasecmp(l[pos].codigo, elemento.codigo) +
             strcasecmp(l[pos].condicion, elemento.condicion)+
             strcasecmp(l[pos].correo, elemento.correo)+
-            l[pos].nota==elemento.nota);
+            l[pos].nota!=elemento.nota);
 }
 
 
