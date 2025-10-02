@@ -12,8 +12,10 @@
 //variables de costos
 int LIBT_Altas=0,
     LIBT_Bajas=0,
-    LIBT_Evocaciones=0;
-    LIBT_celdas_consultadas=0, LIBT_total_celdas=0, LIBT_max_celdas=0;
+    LIBT_Evocaciones_Exitosas=0;
+    LIBT_Evocaciones_NoExitosas=0;
+    LIBT_celdas_consultadas=0, LIBT_total_celdas_Exito=0, LIBT_max_celdas_Exito=0;
+    LIBT_total_celdas_NoExitosa=0, LIBT_max_celdas_NoExitosa=0;
 float LIBT_medio_Alta=0, LIBT_medio_Baja=0, LIBT_medio_Evocar=0,
 LIBT_total_Alta, LIBT_corr_Alta=0, LIBT_max_Alta=0,
 LIBT_total_Baja=0, LIBT_corr_Baja=0, LIBT_max_Baja=0;
@@ -53,6 +55,20 @@ void LIBT_Localizar(Alumno* l[], char codigo[], int *exito, int *pos, int costo)
     if (comp == 0) { //encontró el elemento
         *exito = 1;
         *pos = m;
+
+
+      //calculos de costos en caso de evocacion
+    if (costo==1){
+            //chequear el maximo
+        if (LIBT_celdas_consultadas>LIBT_max_celdas_Exito){
+            LIBT_max_celdas_Exito=LIBT_celdas_consultadas;
+        }
+        //actualizar la cantidad total de celdas consultadas
+        LIBT_total_celdas_Exito+=LIBT_celdas_consultadas;
+        //resetear el contador temporal de celdas
+        LIBT_celdas_consultadas=0;
+    }
+
         break;
     } else if (comp > 0) { //el elemento es menor al x en la posicion m
         ls = m - 1;
@@ -64,19 +80,20 @@ void LIBT_Localizar(Alumno* l[], char codigo[], int *exito, int *pos, int costo)
 
 if (*exito == 0) {
     *pos = li;
-}
-    }
-    //calculos de costos en caso de evocacion
-    if (costo==1){
+     if (costo==1){
             //chequear el maximo
-        if (LIBT_celdas_consultadas>LIBT_max_celdas){
-            LIBT_max_celdas=LIBT_celdas_consultadas;
+        if (LIBT_celdas_consultadas>LIBT_max_celdas_NoExitosa){
+            LIBT_max_celdas_NoExitosa=LIBT_celdas_consultadas;
         }
         //actualizar la cantidad total de celdas consultadas
-        LIBT_total_celdas+=LIBT_celdas_consultadas;
+        LIBT_total_celdas_NoExitosa+=LIBT_celdas_consultadas;
         //resetear el contador temporal de celdas
         LIBT_celdas_consultadas=0;
     }
+}
+    }
+
+
 }
 
 
@@ -150,18 +167,19 @@ int LIBT_Baja(Alumno* l[], char codigo[], Alumno* e)
                     }
                     LIBT_elementos--;//Reducimos el numero de elementos
                     LIBT_Bajas++;
+                    //Calculos de costos
+                    if (LIBT_corr_Baja>LIBT_max_Baja)
+                    {
+                        LIBT_max_Baja=LIBT_corr_Baja;
+                    }
+                    LIBT_total_Baja+=LIBT_corr_Baja;
+                    LIBT_corr_Baja=0;
                     return 1;
                 }
             }
 
 
-        //Calculos de costos
-        if (LIBT_corr_Baja>LIBT_max_Baja)
-        {
-            LIBT_max_Baja=LIBT_corr_Baja;
-        }
-        LIBT_total_Baja+=LIBT_corr_Baja;
-        LIBT_corr_Baja=0;
+
 }
 
 
@@ -184,12 +202,13 @@ void LIBT_Evocar(Alumno* LIBB[], Alumno** Elem, char codigo[], int *exito)
     {
         *Elem = LIBB[pos];
         *exito = 1;
-        LIBT_Evocaciones++;
+        LIBT_Evocaciones_Exitosas++;
     }
     else
     {
         *Elem = NULL;
         *exito = 0;
+        LIBT_Evocaciones_NoExitosas++;
     }
 }
 

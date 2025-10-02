@@ -65,9 +65,12 @@
                 Alta_ABB(arbol, aux_ABB, &exitoABB);
                 break;
                 case 2:
-
-                LIBT_Baja(LIBT, codigo, aux_LIBT);
-                LSO_Baja(LSO, codigo, aux_LSO);
+                LIBT_MostrarAlumno(aux_LIBT);
+                MostrarAlumno(aux_LSO);
+                exitoLIBT=LIBT_Baja(LIBT, codigo, aux_LIBT);
+                exitoLSO=LSO_Baja(LSO, codigo, aux_LSO);
+                printf("exito LIBT_ %d \n", exitoLIBT);
+                printf("exito lso %d \n", exitoLSO);
                 Baja_ABB(arbol, aux_ABB);
 
                 break;
@@ -138,15 +141,25 @@ int main()
                 }
              printf("---------------------------------------------------------- \n");
 
-            printf("Costos de Evocaciones \n");
-            if (LIBT_Evocaciones==0){
-                printf("No se realizaron evocaciones. \n");
+           printf("Costos de Evocaciones Exitosas\n");
+            if (LIBT_Evocaciones_Exitosas==0){
+                printf("No se realizaron evocaciones exitosas. \n");
             }
                 else {
-                    printf("Cantidad total de evocaciones: %d \n", LIBT_Evocaciones);
-                    printf("Coste maximo de celdas consultadas: %d \n", LIBT_max_celdas);
-                    printf("Coste medio de corrimientos: %f \n", LIBT_total_celdas/LIBT_Evocaciones);
+                printf("Cantidad total de evocaciones exitosas: %d \n", LIBT_Evocaciones_Exitosas);
+                  printf("Coste maximo de celdas consultadas: %d \n", LIBT_max_celdas_Exito);
+                    printf("Coste medio de celdas consultadas: %f \n", LIBT_total_celdas_Exito/LIBT_Evocaciones_Exitosas);
                 }
+
+                printf("Costos de Evocaciones No Exitosas\n");
+            if (LIBT_Evocaciones_NoExitosas==0){
+                printf("No se realizaron evocaciones no exitosas. \n");
+            }
+                else {
+                printf("Cantidad total de evocaciones no exitosas: %d \n", LIBT_Evocaciones_NoExitosas);
+                  printf("Coste maximo de celdas consultadas: %d \n", LIBT_max_celdas_NoExitosa);
+                    printf("Coste medio de celdas consultadas: %f \n", LIBT_total_celdas_NoExitosa/LIBT_Evocaciones_NoExitosas);
+            }
 
 
             printf("--------Lista Secuencial Ordenada con examinacion secuencial-------- \n");
@@ -169,15 +182,26 @@ int main()
                     printf("Coste medio de corrimientos: %f \n", LSO_total_Baja/LSO_Bajas);
                 }
              printf("---------------------------------------------------------- \n");
-            printf("Costos de Evocaciones \n");
-            if (LSO_Evocaciones==0){
-                printf("No se realizaron evocaciones. \n");
+
+           printf("Costos de Evocaciones Exitosas\n");
+            if (LSO_Evocaciones_Exitosas==0){
+                printf("No se realizaron evocaciones exitosas. \n");
             }
                 else {
-                    printf("Cantidad total de evocaciones: %d \n", LSO_Evocaciones);
-                    printf("Coste maximo de celdas consultadas: %d \n", LSO_max_celdas);
-                    printf("Coste medio de corrimientos: %f \n", LSO_total_celdas/LSO_Evocaciones);
+                printf("Cantidad total de evocaciones exitosas: %d \n", LSO_Evocaciones_Exitosas);
+                  printf("Coste maximo de celdas consultadas: %d \n", LSO_max_celdas_Exito);
+                    printf("Coste medio de celdas consultadas: %f \n", LSO_total_celdas_Exito/LSO_Evocaciones_Exitosas);
                 }
+
+                printf("Costos de Evocaciones No Exitosas\n");
+            if (LSO_Evocaciones_NoExitosas==0){
+                printf("No se realizaron evocaciones no exitosas. \n");
+            }
+                else {
+                printf("Cantidad total de evocaciones no exitosas: %d \n", LSO_Evocaciones_NoExitosas);
+                  printf("Coste maximo de celdas consultadas: %d \n", LSO_max_celdas_NoExitosa);
+                    printf("Coste medio de celdas consultadas: %f \n", LSO_total_celdas_NoExitosa/LSO_Evocaciones_NoExitosas);
+            }
 
 
            printf("--------Arbol Binario de Busqueda-------- \n");

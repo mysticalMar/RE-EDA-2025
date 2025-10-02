@@ -13,7 +13,8 @@ typedef struct {
  //variables para costos
 int LSO_Altas=0, LSO_total_Alta, LSO_corr_Alta=0, LSO_max_Alta=0,
     LSO_Bajas=0, LSO_total_Baja=0, LSO_corr_Baja=0, LSO_max_Baja=0,
-    LSO_celdas_consultadas=0, LSO_total_celdas=0, LSO_max_celdas=0, LSO_Evocaciones=0;
+    LSO_celdas_consultadas=0, LSO_Evocaciones_Exitosas=0, LSO_Evocaciones_NoExitosas=0, LSO_total_celdas_Exito=0, LSO_max_celdas_Exito=0,
+    LSO_total_celdas_NoExitosa=0, LSO_max_celdas_NoExitosa=0;
 float LSO_medio_Alta=0, LSO_medio_Baja=0, LSO_medio_Evocar=0;
 
 int CantElemLSO = 0;
@@ -30,19 +31,29 @@ void LSO_Localizar(Alumno l[], char codigo[], int *exito, int *pos, int costo) {
     *pos = i;
     if (i<CantElemLSO&&strcasecmp(l[*pos].codigo, codigo)==0) {
         *exito = 1;
-    } else {
-        *exito = 0;
-    }
-    //calculos de costos en caso de evocacion
+            //calculos de costos en caso de evocacion
     if (costo==1){
             //chequear el maximo
-        if (LSO_celdas_consultadas>LSO_max_celdas){
-            LSO_max_celdas=LSO_celdas_consultadas;
+        if (LSO_celdas_consultadas>LSO_max_celdas_Exito){
+            LSO_max_celdas_Exito=LSO_celdas_consultadas;
         }
         //actualizar la cantidad total de celdas consultadas
-        LSO_total_celdas+=LSO_celdas_consultadas;
+        LSO_total_celdas_Exito+=LSO_celdas_consultadas;
         //resetear el contador temporal de celdas
         LSO_celdas_consultadas=0;
+    }
+    } else {
+            *exito = 0;
+            if (costo==1){
+                //chequear el maximo
+            if (LSO_celdas_consultadas>LSO_max_celdas_NoExitosa){
+                LSO_max_celdas_NoExitosa=LSO_celdas_consultadas;
+            }
+            //actualizar la cantidad total de celdas consultadas
+            LSO_total_celdas_NoExitosa+=LSO_celdas_consultadas;
+            //resetear el contador temporal de celdas
+            LSO_celdas_consultadas=0;
+        }
     }
 }
 
@@ -62,6 +73,13 @@ void LSO_Alta(Alumno l[], Alumno ElementoAlta, int *exito) {
             CantElemLSO++;
             LSO_Altas++;
             *exito = 1;
+                         //Calculos de costos
+            if (LSO_corr_Alta>LSO_max_Alta)
+            {
+                LSO_max_Alta=LSO_corr_Alta;
+            }
+            LSO_total_Alta+=LSO_corr_Alta;
+            LSO_corr_Alta=0;
         } else {
             *exito = -1;
         }
@@ -69,21 +87,20 @@ void LSO_Alta(Alumno l[], Alumno ElementoAlta, int *exito) {
         *exito = 2;
 
     }
-     //Calculos de costos
-    if (LSO_corr_Alta>LSO_max_Alta)
-    {
-        LSO_max_Alta=LSO_corr_Alta;
-    }
-    LSO_total_Alta+=LSO_corr_Alta;
-    LSO_corr_Alta=0;
+
 }
 
 int LSO_Baja(Alumno l[], char codigo[], Alumno elemento){
 int pos, exitoLocalizar=0, i;
 
 LSO_Localizar(l, codigo,  &exitoLocalizar, &pos, 0);
-if(exitoLocalizar){
-
+if(!exitoLocalizar){
+        return 0; //no se encontró el elemento
+}
+else if (sondif_LSO(l, pos, elemento)){
+    return 3; //no es el mismo elemento
+}
+else {
     for(i=pos; i < CantElemLSO-1; i++){
         l[i] = l[i+1];
         LSO_corr_Baja++;
@@ -99,10 +116,8 @@ if(exitoLocalizar){
         LSO_corr_Baja=0;
     return 1; //Se dio de baja correctamente
 
-    } else {
-        return 0;
-
     }
+
 
 
 }
@@ -139,15 +154,26 @@ void MostrarAlumno(Alumno a){
             printf("Condicion: %s\n", a.condicion);
 }
 
+int sondif_LSO(Alumno l[], int pos, Alumno elemento)
+{
+    return (strcasecmp(l[pos].nombreyapellido, elemento.nombreyapellido) +
+            strcasecmp(l[pos].codigo, elemento.codigo) +
+            strcasecmp(l[pos].condicion, elemento.condicion)+
+            strcasecmp(l[pos].correo, elemento.correo)+
+            l[pos].nota==elemento.nota);
+}
+
+
 void LSO_Evocar(Alumno l[], Alumno *Elem, char codigo[], int *exito){
     int pos, exitoLocalizar;
     LSO_Localizar(l, codigo, &exitoLocalizar, &pos, 1);
     if(exitoLocalizar){
         *Elem = l[pos]; //Copiamos la informacion del alumno encontrado
         *exito = 1;//Evocacion exitosa
-        LSO_Evocaciones++;
+        LSO_Evocaciones_Exitosas++;
     }else{
         *exito=0;
+        LSO_Evocaciones_NoExitosas++;
     }
 
 }
